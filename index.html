@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TopFragger</title>
+  <style>
+    body {
+      background-color: rgb(255, 73, 73);
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 98svh;
+    }
+
+    .text-light {
+      color: white;
+    }
+
+    .functioner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: rgb(37, 42, 47);
+      padding: 30px;
+      border-radius: 68px;
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+
+    }
+
+    .btn {
+      padding: 20px;
+      border-radius: 38px;
+      min-width: 200px;
+      box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      margin: 5px 0;
+      border: none;
+    }
+
+    .btn:hover {
+      background-color: black !important;
+      color: white !important;
+    }
+
+    #work {
+      background-color: rgb(84, 255, 84);
+    }
+
+    #distract {
+      background-color: orange;
+    }
+
+    #ibot {
+      background-color: rgb(241, 255, 47);
+    }
+
+    #start {
+      background-color: lightblue;
+    }
+
+    #stop {
+      background-color: rgb(255, 178, 178);
+    }
+
+    .time {
+      font-size: 50px;
+      font-weight: bold;
+    }
+
+    .font-weight-lighter {
+      font-weight: lighter;
+
+    }
+
+    .data {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .text-s {
+      text-shadow: 0px 2px 10px rgba(0, 0, 0, 1);
+    }
+
+    .text-green {
+      color: rgb(84, 255, 84);
+    }
+
+    .text-orange {
+      color: orange;
+    }
+
+    .text-greenyellow {
+      color: rgb(241, 255, 47);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="functioner">
+    <h1 class="font-weight-lighter text-light">
+      <span class="time min">0</span> Min<br /><span class="time seconds">0</span>
+      Sec
+
+    </h1>
+    <button class="btn" id="start">Start</button>
+    <button class="btn" id="work">Work</button>
+    <button class="btn" id="distract">Distract</button>
+    <button class="btn" id="ibot">Important but off topic</button>
+    <button class="btn" id="stop">Stop</button>
+
+  </div>
+  <div class="data">
+
+
+  </div>
+  <script>
+    let el_seconds = document.querySelector(".seconds")
+    let el_minutes = document.querySelector(".min")
+    let seconds;
+    let minutes;
+    let data = document.querySelector(".data")
+    let json_timer = {};
+    let btn = document.querySelectorAll(".btn");
+    let n = {}
+    let intervalId;
+    let final_data;
+    let output = document.querySelector(".font-weight-lighter.text-green.text-s")
+    function timer() {
+      seconds = parseInt(el_seconds.innerHTML);
+      minutes = parseInt(el_minutes.innerHTML);
+      if (seconds != 60) {
+        seconds += 1;
+      }
+      else {
+        seconds = 0
+        minutes += 1;
+      }
+      el_seconds.innerHTML = seconds;
+      el_minutes.innerHTML = minutes;
+
+    }
+    btn.forEach(b => {
+      if (b.id == "start") {
+        b.addEventListener('click', () => {
+          data.innerHTML = "";
+          intervalId = setInterval(timer, 1000);
+        });
+      }
+      else if (b.id == "stop") {
+        b.addEventListener('click', () => {
+          clearInterval(intervalId);       // Stop the timer ⏹️
+          intervalId = null;               // Clear stored interval
+
+          seconds = 0;
+          minutes = 0;
+          el_seconds.innerHTML = 0;
+          el_minutes.innerHTML = 0;
+
+          // Clear data tracking
+          json_timer = {};
+          final_data = n;
+          n = {}
+          for (i in final_data) {
+            console.log(final_data[i])
+            let el_h1 = document.createElement("h1")
+            el_h1.setAttribute("class", "font-weight-lighter.text-green.text-s")
+            el_h1.innerHTML = `${i}: ${final_data[i].minutes} Min ${final_data[i].seconds} Sec`;
+            data.appendChild(el_h1)
+          }
+        });
+      }
+
+
+      else {
+        b.addEventListener('click', () => {
+          if (Object.keys(json_timer).length === 0) {
+            json_timer = { "minutes": minutes, "seconds": seconds };
+            n[b.id] = json_timer;
+
+          }
+          else {
+            json_timer = { "minutes": minutes - json_timer.minutes, "seconds": seconds - json_timer.seconds };
+            if (n[b.id] == undefined) {
+              n[b.id] = json_timer;
+            }
+            else {
+              n[b.id].minutes += json_timer.minutes;
+              n[b.id].seconds += json_timer.seconds;
+            }
+
+            json_timer = { "minutes": minutes, "seconds": seconds };
+
+
+          }
+
+        });
+
+      }
+    });
+
+  </script>
+</body>
+
+</html>
